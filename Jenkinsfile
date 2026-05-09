@@ -3,9 +3,9 @@ pipeline {
     tools {
         nodejs 'Node.js 22.6.0'
     }
-    environment {
+   // environment {
      //  MONGO_URI = "mongodb+srv://supercluster.d83jj.mongodb.net/superData"
-    }
+   // }
     stages {
         stage('Unit Testing') {
             options { retry(2) }
