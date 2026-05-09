@@ -4,7 +4,7 @@ pipeline {
         nodejs 'Node.js 22.6.0'
     }
     stages {
-        stage('Installing Dependencies') {
+        stage('Installing Dependency') {
             steps {
                 sh 'npm install --no-audit'
             }
