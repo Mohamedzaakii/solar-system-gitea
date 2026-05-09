@@ -26,7 +26,7 @@ pipeline {
                   dependencyCheck additionalArguments: '''
                     --scan './'
                     --out './'
-                    --format 'HTML XML JUNIT JENKINS'
+                    --format HTML XML JUNIT JENKINS
                     --prettyPrint 
                   ''', odcInstallation: 'owasp-dbcheck-10'
                   dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
