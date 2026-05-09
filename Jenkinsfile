@@ -3,8 +3,12 @@ pipeline {
     tools {
         nodejs 'Node.js 22.6.0'
     }
+    environment {
+       MONGO_URI = "mongodb+srv://supercluster.d83jj.mongodb.net/superData"
+    }
     stages {
         stage('Unit Testing') {
+            options { retry(2) }
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'mongo-db-credentials', 
@@ -18,7 +22,8 @@ pipeline {
         }
         stage('Dependency Scanning') { 
           parallel {  
-            stage('NPM Dependency Audit') {
+            stage('NPM Dependency Audit') { 
+              options { timestamps() } 
               steps {
                   sh '''
                      npm audit --audit-level=critical
