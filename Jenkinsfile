@@ -28,7 +28,7 @@ pipeline {
                     --out './'
                     --format 'All' 
                     --prettyPrint 
-                  ''', odcInstallation: 'wasp-dbcheck-10'
+                  ''', odcInstallation: 'owasp-dbcheck-10'
                   dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
               }  
             }
