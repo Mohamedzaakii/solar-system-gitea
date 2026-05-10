@@ -15,7 +15,7 @@ pipeline {
                     passwordVariable: 'MONGO_PASSWORD', 
                     usernameVariable: 'MONGO_USERNAME'
                 )]) {
-                    sh 'npm test'
+                    sh 'npm run coverage'
                 }
                 junit allowEmptyResults: true, testResults: 'test-results.xml'
             }
