@@ -16,15 +16,17 @@ pipeline {
                 sh 'echo $MONGO_DB_CREDS_USR'
                 sh 'echo $MONGO_DB_Creds_PSW'
                 sh 'npm test'
-            }
+            
 
                 junit allowEmptyResults: true, stdoutRetention: '', testResults: 'test-results.xml'
-        }    
+            
 
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report', reportTitles: '', useWrapperFileDirectly: true])                
 
             }
+
         }
+        
         stage('Dependency Scanning') { 
           parallel {  
             stage('NPM Dependency Audit') { 
