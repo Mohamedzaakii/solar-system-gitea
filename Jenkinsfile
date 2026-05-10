@@ -18,7 +18,7 @@ pipeline {
                 sh 'npm test'
             
 
-                junit allowEmptyResults: true, stdoutRetention: '', testResults: 'test-results.xml'
+                junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
             
 
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report', reportTitles: '', useWrapperFileDirectly: true])                
