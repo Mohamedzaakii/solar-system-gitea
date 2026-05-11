@@ -14,11 +14,11 @@ pipeline {
             steps {
                 sh 'echo $MONGO_DB_CREDS'
                 sh 'echo $MONGO_DB_CREDS_USR'
-                sh 'echo $MONGO_DB_Creds_PSW'
+                sh 'echo $MONGO_DB_CREDS_PSW'
                 sh 'npm test'
             
 
-                junit allowEmptyResults: true, stdioRetention: '', testResults: 'test-results.xml'
+                junit allowEmptyResults: true, testResults: 'test-results.xml'
             
 
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report', reportTitles: '', useWrapperFileDirectly: true])                
@@ -58,7 +58,18 @@ pipeline {
 
               }  
             }
-
+            
+            stage('SAST - SonarQube') {
+              steps {
+                sh ''' 
+                   sonar-scanner \
+                   -Dsonar.projectKey=Solar-System-Project \
+                   -Dsonar.sources=. \
+                   -Dsonar.host.url=http://localhost:9000 \
+                   -Dsonar.token=sqp_82d5c8d182ad092dfb0e2c3956ab4f08ee4176c8
+               ''' 
+             }
+           }
           } 
         }
     }
