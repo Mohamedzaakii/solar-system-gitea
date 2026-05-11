@@ -61,7 +61,7 @@ pipeline {
               }  
             }
             
-            stage('SAST - SonarQube') {
+            stage('SAST-SonarQube') {
               steps {
                 sh 'echo $SONAR_SCANNER_HOME'
                 sh ''' 
