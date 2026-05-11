@@ -62,6 +62,8 @@ pipeline {
             
             stage('SAST - SonarQube') {
               steps {
+                tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+
                 sh ''' 
                    sonar-scanner \
                    -Dsonar.projectKey=Solar-System-Project \
