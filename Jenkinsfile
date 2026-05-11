@@ -61,7 +61,7 @@ pipeline {
               }  
             }
             
-            stage('SAST and SonarQube') {
+            stage('SAST-SonarQube') {
               steps {
                 withSonarQubeEnv('SonarQube') {
 
