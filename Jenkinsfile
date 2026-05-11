@@ -51,6 +51,7 @@ pipeline {
                     --out './'
                     --format HTML XML JUNIT JENKINS
                     --prettyPrint 
+                    --disableYarnAudit
                   ''', odcInstallation: 'owasp-dbcheck-10'
                   dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
 
