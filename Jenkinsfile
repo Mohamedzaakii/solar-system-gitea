@@ -18,7 +18,9 @@ pipeline {
                 sh 'echo $MONGO_DB_CREDS_PSW'
                 sh 'npm install'
                 sh 'npm test'
-            
+                sh 'npm run coverage'
+                sh 'ls -la coverage'
+                sh 'test -f coverage/lcov.info'
 
                 junit allowEmptyResults: true, testResults: 'test-results.xml'
             
