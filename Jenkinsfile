@@ -72,6 +72,7 @@ pipeline {
                    -Dsonar.sources=. \
                    -Dsonar.host.url=http://localhost:9000 \
                    -Dsonar.token=$SONAR_TOKEN
+                   -Dsonar.branch.name=${env.BRANCH_NAME}
                """ 
              }
            }
