@@ -7,7 +7,7 @@ pipeline {
        MONGO_URI = "mongodb+srv://supercluster.d83jj.mongodb.net/superData"
        MONGO_DB_CREDS = credentials('mongo-db-credentials')
        SONAR_SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-
+       SONAR_TOKEN = credentials('solar-system-token')
     }
     stages {
         stage('Unit Testing') {
@@ -63,13 +63,15 @@ pipeline {
             
             stage('SAST and SonarQube') {
               steps {
+                withSonarQubeEnv('SonarQube') {
+
                 sh "echo $SONAR_SCANNER_HOME"
                 sh """
                    $SONAR_SCANNER_HOME/bin/sonar-scanner \
                    -Dsonar.projectKey=Solar-System-Project \
                    -Dsonar.sources=. \
                    -Dsonar.host.url=http://localhost:9000 \
-                   -Dsonar.token=sqp_82d5c8d182ad092dfb0e2c3956ab4f08ee4176c8
+                   -Dsonar.token=$SONAR_TOKEN
                """ 
              }
            }
