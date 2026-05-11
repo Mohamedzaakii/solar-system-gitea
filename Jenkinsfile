@@ -66,14 +66,14 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
 
                 sh "echo $SONAR_SCANNER_HOME"
-                sh """
+                sh '''
                    $SONAR_SCANNER_HOME/bin/sonar-scanner \
                    -Dsonar.projectKey=Solar-System-Project \
                    -Dsonar.sources=. \
                    -Dsonar.host.url=http://localhost:9000 \
                    -Dsonar.token=$SONAR_TOKEN \
-                   -Dsonar.branch.name=${env.BRANCH_NAME}
-               """ 
+                   
+                '''
              }
            }
           } 
