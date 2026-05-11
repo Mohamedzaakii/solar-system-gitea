@@ -15,6 +15,7 @@ pipeline {
                 sh 'echo $MONGO_DB_CREDS'
                 sh 'echo $MONGO_DB_CREDS_USR'
                 sh 'echo $MONGO_DB_CREDS_PSW'
+                sh 'npm install'
                 sh 'npm test'
             
 
