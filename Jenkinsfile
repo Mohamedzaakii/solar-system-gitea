@@ -86,6 +86,22 @@ pipeline {
             } 
          }
        }
+       stage('Git Checkout') {
+         steps {
+           checkout scm
+         }
+       } 
+       stage('Build Docker Image') {
+         steps {
+           sh'printenv'
+           sh 'docker build -t m0hamedzaki/solar-system:$GIT_COMMIT .'
+         }
+       }
+
+
+
+
+
     }
 }
  
