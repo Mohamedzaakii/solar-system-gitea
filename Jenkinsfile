@@ -82,7 +82,7 @@ pipeline {
                       -Dsonar.sources=. \
                       -Dsonar.host.url=http://localhost:9000 \
                       -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info \
-                      -Dsonar.token=$SONAR_TOKEN \
+                      -Dsonar.token=$SONAR_TOKEN 
                    
                    '''
                  }
