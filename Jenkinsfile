@@ -8,7 +8,7 @@ pipeline {
        MONGO_DB_CREDS = credentials('mongo-db-credentials')
        SONAR_SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
        SONAR_TOKEN = credentials('solar-system-token')
-       SONAR_SCANNER_OPTS = "-Xmx2048m"
+       SONAR_SCANNER_OPTS = "-Xmx4096m"
     }
     stages {
         stage('Git Checkout') {
