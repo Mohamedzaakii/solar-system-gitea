@@ -8,8 +8,14 @@ pipeline {
        MONGO_DB_CREDS = credentials('mongo-db-credentials')
        SONAR_SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
        SONAR_TOKEN = credentials('solar-system-token')
+       SONAR_SCANNER_OPTS = "-Xmx2048m"
     }
     stages {
+        stage('Git Checkout') {
+         steps {
+           checkout scm
+         }
+        } 
         stage('Unit Testing') {
             options { retry(2) }
             steps {
@@ -66,7 +72,7 @@ pipeline {
             
             stage('SAST-SonarQube') {
               steps {
-                timeout(time: 60, unit: 'SECONDS') {
+                timeout(time: 15, unit: 'MINUTES') {
                  withSonarQubeEnv('SonarQube') {
 
                    sh "echo $SONAR_SCANNER_HOME"
@@ -86,11 +92,7 @@ pipeline {
             } 
          }
        }
-       stage('Git Checkout') {
-         steps {
-           checkout scm
-         }
-       } 
+       
        stage('Build Docker Image') {
          steps {
            sh'printenv'
