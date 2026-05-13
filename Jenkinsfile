@@ -163,7 +163,7 @@ pipeline {
         }
       }
 
-      stage('Deploy to AWS EC2') {
+      stage('Deploy to EC2') {
         steps {
           script {
            sshagent(['ec2-ssh']) {
