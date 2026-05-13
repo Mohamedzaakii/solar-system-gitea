@@ -155,6 +155,13 @@ pipeline {
         }
       }
 
+      stage('Push Docker Image') {
+        steps {
+          withDockerRegistry(credentialsId: 'docker-hub') {
+          sh 'docker build -t m0hamedzaki/solar-system:$GIT_COMMIT .'
+          }
+        }
+      }
 
 
 
