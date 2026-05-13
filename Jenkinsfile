@@ -9,6 +9,7 @@ pipeline {
        SONAR_SCANNER_HOME = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
        SONAR_TOKEN = credentials('solar-system-token')
        SONAR_SCANNER_OPTS = "-Xmx4096m"
+       CHECKS_API_SKIP = "true"
     }
     stages {
         stage('Git Checkout') {
@@ -51,7 +52,8 @@ pipeline {
 
            
             stage('OWASP Dependency Check') {
-              steps {
+              steps { 
+                  sh 'mkdir -p /var/lib/jenkins/owasp-data'               
                   dependencyCheck additionalArguments: '''
                     --scan './'
                     --out './'
@@ -62,6 +64,7 @@ pipeline {
                     --disableNugetConfAnalyzer
                     --disableCentralAnalyzer
                     --disableExperimental
+                    --data /var/lib/jenkins/owasp-data
                   ''', odcInstallation: 'owasp-dbcheck-10'
                   dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
 
