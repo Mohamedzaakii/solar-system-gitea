@@ -107,54 +107,46 @@ pipeline {
            sh 'trivy image --severity CRITICAL --exit-code 1 --quiet --format json --output trivy-critical.json m0hamedzaki/solar-system:$GIT_COMMIT'
          }
          post {
-           always {
-              sh '''
-                 if [ -f trivy-medium.json ]; then
-                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-medium.html trivy-medium.json
-                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-medium.xml trivy-medium.json
+          always {
+            sh '''
+                
+                mkdir -p $HOME/.trivy/templates/
+                
+                # Download HTML template if missing
+                if [ ! -f "$HOME/.trivy/templates/html.tpl" ]; then
+                    curl -sSL -o $HOME/.trivy/templates/html.tpl \
+                        https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
                 fi
-
-                 if [ -f trivy-high.json ]; then
-                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-high.html trivy-high.json
-                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-high.xml trivy-high.json
-                fi 
-
-                 if [ -f trivy-critical.json ]; then
-                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-critical.html trivy-critical.json
-                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-critical.xml trivy-critical.json
-                fi  
-                 '''  
-                publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '.',
-                reportFiles: 'trivy-critical.html',
-                reportName: 'Trivy - CRITICAL Vulnerabilities'
-            ])
-                publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '.',
-                reportFiles: 'trivy-high.html',
-                reportName: 'Trivy - HIGH Vulnerabilities'
-            ])
-                publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '.',
-                reportFiles: 'trivy-medium.html',
-                reportName: 'Trivy - MEDIUM/LOW Vulnerabilities'
-            ])
-
-            junit allowEmptyResults: true, 
-                  keepLongStdio: true,
-                  testResults: 'trivy-*.xml' 
-           }
+                
+                # Download JUnit template if missing
+                if [ ! -f "$HOME/.trivy/templates/junit.tpl" ]; then
+                    curl -sSL -o $HOME/.trivy/templates/junit.tpl \
+                        https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/junit.tpl
+                fi
+                
+                # Now convert the JSON reports
+                for severity in medium high critical; do
+                    if [ -f "trivy-${severity}.json" ]; then
+                        trivy convert --format template \
+                            --template "@$HOME/.trivy/templates/html.tpl" \
+                            --output "trivy-${severity}.html" \
+                            "trivy-${severity}.json" || echo "Failed to convert ${severity} to HTML"
+                        
+                        trivy convert --format template \
+                            --template "@$HOME/.trivy/templates/junit.tpl" \
+                            --output "trivy-${severity}.xml" \
+                            "trivy-${severity}.json" || echo "Failed to convert ${severity} to JUnit"
+                    fi
+                done
+            '''
+            
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '.', reportFiles: 'trivy-critical.html', reportName: 'Trivy - CRITICAL Vulnerabilities'])
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '.', reportFiles: 'trivy-high.html', reportName: 'Trivy - HIGH Vulnerabilities'])
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: '.', reportFiles: 'trivy-medium.html', reportName: 'Trivy - MEDIUM/LOW Vulnerabilities'])
+            junit allowEmptyResults: true, keepLongStdio: true, testResults: 'trivy-*.xml'
          }
-       }
+        }
+      }
 
 
 
