@@ -101,7 +101,7 @@ pipeline {
        }
        stage('Trivy vulnerability scanning') {
          steps {
-           sh 'docker pull m0hamedzaki/solar-system:$GIT_COMMIT'
+           
            sh 'trivy image --severity LOW,MEDIUM --exit-code 0 --quiet --format json --output trivy-medium.json m0hamedzaki/solar-system:$GIT_COMMIT'
            sh 'trivy image --severity HIGH --exit-code 0 --quiet --format json --output trivy-high.json m0hamedzaki/solar-system:$GIT_COMMIT'
            sh 'trivy image --severity CRITICAL --exit-code 1 --quiet --format json --output trivy-critical.json m0hamedzaki/solar-system:$GIT_COMMIT'
@@ -109,35 +109,20 @@ pipeline {
          post {
            always {
               sh '''
-                 trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/html.tpl" \
-                    --output trivy-medium.html \
-                    trivy-medium.json
+                 if [ -f trivy-medium.json ]; then
+                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-medium.html trivy-medium.json
+                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-medium.xml trivy-medium.json
+                fi
 
-                  trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/junit.tpl" \
-                    --output trivy-medium.xml \
-                    trivy-medium.json
+                 if [ -f trivy-high.json ]; then
+                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-high.html trivy-high.json
+                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-high.xml trivy-high.json
+                fi 
 
-                  trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/html.tpl" \
-                    --output trivy-high.html \
-                    trivy-high.json
-
-                  trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/junit.tpl" \
-                    --output trivy-high.xml \
-                    trivy-high.json
-
-                  trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/html.tpl" \
-                    --output trivy-critical.html \
-                    trivy-critical.json
-
-                  trivy convert --format template \
-                    --template "@$HOME/.trivy/templates/junit.tpl" \
-                    --output trivy-critical.xml \
-                    trivy-critical.json  
+                 if [ -f trivy-critical.json ]; then
+                    trivy convert --format template --template "@$HOME/.trivy/templates/html.tpl" --output trivy-critical.html trivy-critical.json
+                    trivy convert --format template --template "@$HOME/.trivy/templates/junit.tpl" --output trivy-critical.xml trivy-critical.json
+                fi  
                  '''  
                 publishHTML([
                 allowMissing: true,
