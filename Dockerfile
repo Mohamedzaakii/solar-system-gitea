@@ -1,4 +1,4 @@
-FROM node:18-alpine3.17.6
+FROM node:18-alpine
 RUN apk update && apk upgrade --no-cache libcrypto3 libssl3
 
 WORKDIR /usr/app
