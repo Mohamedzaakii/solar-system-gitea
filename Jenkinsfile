@@ -99,6 +99,12 @@ pipeline {
            sh 'docker build -t m0hamedzaki/solar-system:$GIT_COMMIT .'
          }
        }
+       stage('Trivy vulnerability scanning') {
+         steps {
+           sh 'docker pull m0hamedzaki/solar-system:$GIT_COMMIT'
+           sh 'trivy image --severity CRITICAL --exit-code 1 m0hamedzaki/solar-system:$GIT_COMMIT'
+         }
+       }
 
 
 
