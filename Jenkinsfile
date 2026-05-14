@@ -19,10 +19,7 @@ pipeline {
         } 
         stage('Unit Testing') {
             options { retry(2) }
-            steps {
-                sh 'echo $MONGO_DB_CREDS'
-                sh 'echo $MONGO_DB_CREDS_USR'
-                sh 'echo $MONGO_DB_CREDS_PSW'
+            steps {                
                 sh 'npm install'
                 sh 'npm test'
                 sh 'npm run coverage'
