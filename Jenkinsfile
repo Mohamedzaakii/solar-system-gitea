@@ -21,7 +21,17 @@ pipeline {
             
             steps {                
                 sh 'npm install'
-                sh 'npm test'
+                withCredentials([usernamePassword(
+                  credentialsId: 'mongo-db-credentials',
+                  usernameVariable: 'MONGO_USERNAME',
+                  passwordVariable: 'MONGO_PASSWORD'
+               )]) {
+                   sh '''
+                      export MONGO_URI="mongodb+srv://supercluster.d83jj.mongodb.net/superData"
+                      npm test
+                  '''
+              }
+                
                 sh 'npm run coverage'
                 sh 'ls -la coverage'
                 sh 'test -f coverage/lcov.info'
