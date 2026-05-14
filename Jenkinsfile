@@ -166,34 +166,33 @@ pipeline {
         }
       }
 
-              stage('Update GitOps Manifest') {
-               steps {
-                sh '''
-                    # Clone the GitOps repo
-                    git clone https://github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git
-                    cd solar-system-gitops-argocd-gitea
-                    
-                    # Update the image tag in deployment.yaml
-                    sed -i "s#m0hamedzaki/solar-system:.*#m0hamedzaki/solar-system:$GIT_COMMIT#g" kubernetes/deployment.yaml
-                    
-                    # Commit and push back
-                    git config user.email "jenkins@example.com"
-                    git config user.name "Jenkins"
-                    git add kubernetes/deployment.yaml
-                    git commit -m "Update image to $GIT_COMMIT"
-                    git push https://Mohamedzaakii:$GITHUB_TOKEN@github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git main
-                '''
-            }
-            post {
-                always {
-                    script {
-                        if (fileExists('solar-system-gitops-argocd-gitea')) {
-                            sh 'rm -rf solar-system-gitops-argocd-gitea'
-                        }
-                    }
+      stage('Update GitOps Manifest') {
+    steps {
+        sh 'git clone https://github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git'
+        dir('solar-system-gitops-argocd-gitea/kubernetes') {
+            sh '''
+                # Update the image tag in deployment.yaml
+                sed -i "s#m0hamedzaki/solar-system:.*#m0hamedzaki/solar-system:$GIT_COMMIT#g" deployment.yaml
+                
+                # Commit and push back
+                git config user.email "jenkins@example.com"
+                git config user.name "Jenkins"
+                git add deployment.yaml
+                git commit -m "Update image to $GIT_COMMIT"
+                git push https://Mohamedzaakii:$GITHUB_TOKEN@github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git main
+            '''
+        }
+    }
+    post {
+        always {
+            script {
+                if (fileExists('solar-system-gitops-argocd-gitea')) {
+                    sh 'rm -rf solar-system-gitops-argocd-gitea'
                 }
             }
         }
+    }
+}      
     }
 }
       
