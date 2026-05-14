@@ -84,7 +84,7 @@ pipeline {
               }  
             }
             
-            stage('SAST-SonarQube') {
+            stage('SAST - SonarQube') {
               steps {
                 timeout(time: 15, unit: 'MINUTES') {
                  withSonarQubeEnv('SonarQube') {
