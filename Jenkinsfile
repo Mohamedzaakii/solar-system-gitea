@@ -18,7 +18,7 @@ pipeline {
          }
         } 
         stage('Unit Testing') {
-            options { retry(2) }
+            
             steps {                
                 sh 'npm install'
                 sh 'npm test'
