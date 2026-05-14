@@ -10,6 +10,7 @@ pipeline {
        SONAR_TOKEN = credentials('solar-system-token')
        SONAR_SCANNER_OPTS = "-Xmx4096m"
        CHECKS_API_SKIP = "true"
+       GITHUB_TOKEN = credentials('github-token')
     }
     stages {
         stage('Git Checkout') {
@@ -165,42 +166,37 @@ pipeline {
         }
       }
 
-      stage('Deploy to EC2') {
-        steps {
-          script {
-           sshagent(['ec2-ssh']) {
-            sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@54.242.124.114 "
-                if sudo docker ps -a | grep -q 'solar-system'; then
-                   echo "Container found. Stopping..."
-                   sudo docker stop "solar-system" && sudo docker rm "solar-system"
-                   echo "Container stopped and removed"
-                fi
-                
-                   sudo docker run --name solar-system \\
-                     -e MONGO_URI="$MONGO_URI" \\
-                     -e MONGO_USERNAME="$MONGO_DB_CREDS_USR" \\
-                     -e MONGO_PASSWORD="$MONGO_DB_CREDS_PSW" \\
-                     -p 3000:3000 -d m0hamedzaki/solar-system:$GIT_COMMIT
-                "
-            ''' 
-           } 
-          }
+              stage('Update GitOps Manifest') {
+               steps {
+                sh '''
+                    # Clone the GitOps repo
+                    git clone https://github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git
+                    cd solar-system-gitops-argocd-gitea
+                    
+                    # Update the image tag in deployment.yaml
+                    sed -i "s#m0hamedzaki/solar-system:.*#m0hamedzaki/solar-system:$GIT_COMMIT#g" kubernetes/deployment.yaml
+                    
+                    # Commit and push back
+                    git config user.email "jenkins@example.com"
+                    git config user.name "Jenkins"
+                    git add kubernetes/deployment.yaml
+                    git commit -m "Update image to $GIT_COMMIT"
+                    git push https://Mohamedzaakii:$GITHUB_TOKEN@github.com/Mohamedzaakii/solar-system-gitops-argocd-gitea.git main
+                '''
+            }
+            post {
+                always {
+                    script {
+                        if (fileExists('solar-system-gitops-argocd-gitea')) {
+                            sh 'rm -rf solar-system-gitops-argocd-gitea'
+                        }
+                    }
+                }
+            }
         }
-      }
-      stage('Integration Testing - AWS EC2') {
-        steps {
-          withAWS(credentials: 'AWS-S3-EC2-Lambda', region: 'us-east-1') {
-            sh ''' 
-                bash integration-testing-ec2.sh
-            '''
-          }
-        }
-      }
-
     }
 }
- 
+      
 
 
 
