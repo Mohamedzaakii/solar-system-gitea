@@ -186,7 +186,15 @@ pipeline {
           }
         }
       }
-
+      stage('Integration Testing - AWS EC2') {
+        steps {
+          withAWS(credentials: 'AWS-S3-EC2-Lambda', region: 'us-east-1') {
+            sh ''' 
+                bash integration-testing-ec2.sh
+            '''
+          }
+        }
+      }
 
     }
 }
